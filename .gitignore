@@ -1,0 +1,8 @@
+/cache/
+/data/
+/dist/
+/server/ab0x.go
+/ui/dist/
+/ui/node_modules/
+/.dep-node_modules
+/.dep-static
