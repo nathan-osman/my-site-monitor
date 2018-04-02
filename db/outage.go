@@ -1,6 +1,7 @@
 package db
 
 import (
+	"strconv"
 	"time"
 )
 
@@ -18,4 +19,20 @@ type Outage struct {
 	// Site that is experiencing the outage
 	Site   *Site `gorm:"ForeignKey:SiteID"`
 	SiteID int64 `sql:"type:int REFERENCES sites(id) ON DELETE CASCADE"`
+}
+
+// GetName retrieves a descriptive name for groups of outages
+func (o *Outage) GetName() string {
+	return "outages"
+}
+
+// GetID returns the unique identifier for the outage.
+func (o *Outage) GetID() string {
+	return strconv.FormatInt(o.ID, 10)
+}
+
+// SetID sets the unique identifier for the outage.
+func (o *Outage) SetID(id string) error {
+	o.ID, _ = strconv.ParseInt(id, 10, 64)
+	return nil
 }
