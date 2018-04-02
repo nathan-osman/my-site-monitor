@@ -5,6 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/manyminds/api2go"
+	"github.com/nathan-osman/api2go-resource"
+	"github.com/nathan-osman/my-site-monitor/db"
 	"github.com/sirupsen/logrus"
 )
 
@@ -16,7 +19,7 @@ type Server struct {
 	stopped  chan bool
 }
 
-// New creates and initializes the server
+// New creates and initializes the server.
 func New(cfg *Config) (*Server, error) {
 	l, err := net.Listen("tcp", cfg.Addr)
 	if err != nil {
@@ -29,10 +32,23 @@ func New(cfg *Config) (*Server, error) {
 			log:      logrus.WithField("context", "server"),
 			stopped:  make(chan bool),
 		}
+		api    = api2go.NewAPI("api")
 		server = http.Server{
 			Handler: r,
 		}
 	)
+	api.AddResource(&db.User{}, &resource.Resource{
+		DB:   cfg.Conn.DB,
+		Type: &db.User{},
+	})
+	api.AddResource(&db.Site{}, &resource.Resource{
+		DB:   cfg.Conn.DB,
+		Type: &db.Site{},
+	})
+	api.AddResource(&db.Outage{}, &resource.Resource{
+		DB:   cfg.Conn.DB,
+		Type: &db.Outage{},
+	})
 	r.PathPrefix("/").Handler(http.FileServer(HTTP))
 	go func() {
 		defer close(s.stopped)

@@ -48,6 +48,7 @@ func main() {
 		// Start the server
 		s, err := server.New(&server.Config{
 			Addr: c.String("addr"),
+			Conn: conn,
 		})
 		if err != nil {
 			return err
