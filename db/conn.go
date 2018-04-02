@@ -31,6 +31,7 @@ func New(cfg *Config) (*Conn, error) {
 func (c *Conn) Migrate() error {
 	c.log.Info("performing migrations...")
 	return c.AutoMigrate(
+		&User{},
 		&Site{},
 		&Outage{},
 	).Error
