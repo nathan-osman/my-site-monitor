@@ -17,10 +17,34 @@ func main() {
 	app.Usage = "My Site Monitor"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:   "db-filename",
-			Value:  "msm.sqlite3",
-			EnvVar: "DB_FILENAME",
-			Usage:  "filename for database file",
+			Name:   "db-host",
+			Value:  "postgres",
+			EnvVar: "DB_HOST",
+			Usage:  "PostgreSQL database host",
+		},
+		cli.IntFlag{
+			Name:   "db-port",
+			Value:  5432,
+			EnvVar: "DB_PORT",
+			Usage:  "PostgreSQL database port",
+		},
+		cli.StringFlag{
+			Name:   "db-name",
+			Value:  "postgres",
+			EnvVar: "DB_NAME",
+			Usage:  "PostgreSQL database name",
+		},
+		cli.StringFlag{
+			Name:   "db-user",
+			Value:  "postgres",
+			EnvVar: "DB_NAME",
+			Usage:  "PostgreSQL database user",
+		},
+		cli.StringFlag{
+			Name:   "db-password",
+			Value:  "postgres",
+			EnvVar: "DB_PASSWORD",
+			Usage:  "PostgreSQL database password",
 		},
 		cli.StringFlag{
 			Name:   "server-addr",
@@ -33,7 +57,11 @@ func main() {
 
 		// Connect to the database
 		conn, err := db.New(&db.Config{
-			Filename: c.String("dir"),
+			Host:     c.String("db-host"),
+			Port:     c.Int("db-port"),
+			Name:     c.String("db-name"),
+			User:     c.String("db-user"),
+			Password: c.String("db-password"),
 		})
 		if err != nil {
 			return err
