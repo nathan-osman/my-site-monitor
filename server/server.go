@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/manyminds/api2go"
+	"github.com/nathan-osman/api2go-auth"
 	"github.com/nathan-osman/api2go-resource"
 	"github.com/nathan-osman/my-site-monitor/db"
 	"github.com/sirupsen/logrus"
@@ -32,7 +33,10 @@ func New(cfg *Config) (*Server, error) {
 			log:      logrus.WithField("context", "server"),
 			stopped:  make(chan bool),
 		}
-		api    = api2go.NewAPI("api")
+		api = api2go.NewAPI("api")
+		h   = auth.New(api, &userAuth{
+			Conn: cfg.Conn,
+		}, []byte(cfg.SecretKey))
 		server = http.Server{
 			Handler: r,
 		}
@@ -49,6 +53,7 @@ func New(cfg *Config) (*Server, error) {
 		DB:   cfg.Conn.DB,
 		Type: &db.Outage{},
 	})
+	r.PathPrefix("/api/").Handler(h)
 	r.PathPrefix("/").Handler(http.FileServer(HTTP))
 	go func() {
 		defer close(s.stopped)

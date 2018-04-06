@@ -6,6 +6,7 @@ import (
 
 // Config stores the configuration for the embedded web server.
 type Config struct {
-	Addr string
-	Conn *db.Conn
+	Addr      string
+	Conn      *db.Conn
+	SecretKey string
 }
