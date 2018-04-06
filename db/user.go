@@ -13,7 +13,7 @@ type User struct {
 	ID       int64
 	Username string `gorm:"not null"`
 	Password string `gorm:"not null"`
-	IsAdmin  string `gorm:"not null"`
+	IsAdmin  bool   `gorm:"not null"`
 }
 
 // GetName retrieves a descriptive name for groups of users.
