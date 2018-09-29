@@ -21,7 +21,7 @@ func New(cfg *Config) (*Conn, error) {
 	g, err := gorm.Open(
 		"postgres",
 		fmt.Sprintf(
-			"host=%s port=%d dbname=%s user=%s password=%s",
+			"host=%s port=%d dbname=%s user=%s password=%s sslmode=disable",
 			cfg.Host,
 			cfg.Port,
 			cfg.Name,
