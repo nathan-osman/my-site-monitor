@@ -1,4 +1,5 @@
 import { Model } from '@vuex-orm/core'
+import User from './User'
 
 export default class Site extends Model {
   static entity = 'sites'
@@ -13,6 +14,7 @@ export default class Site extends Model {
       status: this.attr(null),
       status_time: this.attr(null),
       user_id: this.attr(null),
+      user: this.belongsTo(User, 'user_id')
     }
   }
 }
