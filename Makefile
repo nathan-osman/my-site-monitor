@@ -5,11 +5,16 @@ CWD = $(shell pwd)
 UID = $(shell id -u)
 GID = $(shell id -g)
 
+# Modified from https://stackoverflow.com/a/18258352/193619
+rwildcard = $(wildcard $1$2) $(foreach d,$(filter-out cache/%,$(wildcard $1*)),$(call rwildcard,$d/,$2))
+
 # Find all Go source files (excluding the cache path)
-SOURCES = $(shell find -type f -name '*.go' ! -path './cache/*')
+SOURCES = $(call rwildcard,,*.go)
 
 # Find all source files that comprise the UI
-UIFILES = $(shell find ui/public ui/src) ui/package-lock.json
+UIFILES = $(call rwildcard,ui/public/,*) \
+          $(call rwildcard,ui/src/,*) \
+          ui/package-lock.json
 
 all: dist/${CMD}
 
@@ -18,6 +23,8 @@ dist/${CMD}: ${SOURCES} server/ab0x.go | cache/lib cache/src/${PKG} dist
 	@docker run \
 	    --rm \
 	    -e HOME=/tmp \
+	    -e GOOS=${GOOS} \
+	    -e GOARCH=${GOARCH} \
 	    -e CGO_ENABLED=0 \
 	    -e GIT_COMMITTER_NAME=a \
 	    -e GIT_COMMITTER_EMAIL=b \
@@ -30,21 +37,25 @@ dist/${CMD}: ${SOURCES} server/ab0x.go | cache/lib cache/src/${PKG} dist
 	    go get -pkgdir /go/lib ${PKG}/cmd/${CMD}
 
 # Create a Go source file with the static files
-server/ab0x.go: dist/fileb0x b0x.yaml .dep-static
-	@dist/fileb0x b0x.yaml
+server/ab0x.go: cache/bin/fileb0x b0x.yaml .dep-static
+	@docker run \
+	    --rm \
+	    -u ${UID}:${GID} \
+	    -v ${CWD}/cache/bin:/go/bin \
+	    -v ${CWD}:/go/src/${PKG} \
+	    -w /go/src/${PKG} \
+	    golang:latest \
+	    fileb0x b0x.yaml
 
 # Create the fileb0x executable needed for embedding files
-dist/fileb0x: | cache/lib cache/src/${PKG} dist
+cache/bin/fileb0x: | cache/bin cache/lib cache/src/${PKG} dist
 	@docker run \
 	    --rm \
 	    -e HOME=/tmp \
-	    -e CGO_ENABLED=0 \
 	    -e GIT_COMMITTER_NAME=a \
 	    -e GIT_COMMITTER_EMAIL=b \
 	    -u ${UID}:${GID} \
-	    -v ${CWD}/cache/lib:/go/lib \
-	    -v ${CWD}/cache/src:/go/src \
-	    -v ${CWD}/dist:/go/bin \
+	    -v ${CWD}/cache:/go \
 	    golang:latest \
 	    go get -pkgdir /go/lib github.com/UnnoTed/fileb0x
 
@@ -71,6 +82,9 @@ dist/fileb0x: | cache/lib cache/src/${PKG} dist
 	    node:latest \
 	    npm install
 	@touch .dep-node_modules
+
+cache/bin:
+	@mkdir -p cache/bin
 
 cache/lib:
 	@mkdir -p cache/lib
