@@ -1,6 +1,6 @@
 import DS from 'ember-data';
 
-export default DS.Modle.extend({
+export default DS.Model.extend({
   url: DS.attr('string'),
   name: DS.attr('string'),
   pollInterval: DS.attr('number'),
