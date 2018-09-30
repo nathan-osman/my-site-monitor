@@ -2,16 +2,9 @@
   "name": "msm",
   "private": true,
   "scripts": {
-    "build": "vue-cli-service build"
-  },
-  "dependencies": {
-    "@vuex-orm/core": "^0.26.2",
-    "vue": "^2.5.17",
-    "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
+    "build": "ember build"
   },
   "devDependencies": {
-    "@vue/cli-service": "^3.0.4",
-    "vue-template-compiler": "^2.5.17"
+    "ember-cli": "~3.4.3"
   }
 }
