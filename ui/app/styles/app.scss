@@ -1,0 +1,38 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+}
+
+.container {
+  margin: 0 16px;
+}
+
+.header {
+  background-color: #aa3939;
+  margin-bottom: 16px;
+  padding: 16px 0;
+
+  h2 {
+    font-size: 20pt;
+    font-weight: normal;
+    margin: 0;
+  }
+
+  a {
+    color: #d46a6a;
+    text-decoration: none;
+    transition: color 200ms ease;
+
+    &:hover {
+      color: #ffaaaa;
+      transition: color 200ms ease;
+    }
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    margin: auto;
+    max-width: 970px;
+  }
+}
