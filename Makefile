@@ -6,14 +6,13 @@ UID = $(shell id -u)
 GID = $(shell id -g)
 
 # Modified from https://stackoverflow.com/a/18258352/193619
-rwildcard = $(wildcard $1$2) $(foreach d,$(filter-out cache/%,$(wildcard $1*)),$(call rwildcard,$d/,$2))
+rwildcard = $(wildcard $1$2) $(foreach d,$(wildcard $1),$(call rwildcard,$d/*,$2))
 
 # Find all Go source files (excluding the cache path)
-SOURCES = $(call rwildcard,,*.go)
+SOURCES = $(filter-out cache/%,$(call rwildcard,*,*.go))
 
 # Find all source files that comprise the UI
-UIFILES = $(call rwildcard,ui/public/,*) \
-          $(call rwildcard,ui/src/,*) \
+UIFILES = $(call rwildcard,ui/app/* ui/config/*,*) \
           ui/package-lock.json
 
 all: dist/${CMD}
