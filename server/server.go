@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/manyminds/api2go"
-	"github.com/nathan-osman/api2go-auth"
 	"github.com/nathan-osman/api2go-resource"
 	"github.com/nathan-osman/my-site-monitor/db"
 	"github.com/sirupsen/logrus"
@@ -16,6 +16,8 @@ import (
 // static files that comprise the UI.
 type Server struct {
 	listener net.Listener
+	conn     *db.Conn
+	store    *sessions.CookieStore
 	log      *logrus.Entry
 	stopped  chan bool
 }
@@ -30,30 +32,35 @@ func New(cfg *Config) (*Server, error) {
 		r = mux.NewRouter()
 		s = &Server{
 			listener: l,
+			conn:     cfg.Conn,
+			store:    sessions.NewCookieStore([]byte(cfg.SecretKey)),
 			log:      logrus.WithField("context", "server"),
 			stopped:  make(chan bool),
 		}
-		api = api2go.NewAPI("api")
-		h   = auth.New(api, &userAuth{
-			Conn: cfg.Conn,
-		}, []byte(cfg.SecretKey))
+		api    = api2go.NewAPI("api")
 		server = http.Server{
 			Handler: r,
 		}
 	)
 	api.AddResource(&db.User{}, &resource.Resource{
-		DB:   cfg.Conn.DB,
-		Type: &db.User{},
+		DB:    s.conn.DB,
+		Type:  &db.User{},
+		Hooks: []resource.Hook{s.requireLogin},
 	})
 	api.AddResource(&db.Site{}, &resource.Resource{
-		DB:   cfg.Conn.DB,
-		Type: &db.Site{},
+		DB:     s.conn.DB,
+		Type:   &db.Site{},
+		Hooks:  []resource.Hook{s.requireLogin},
+		Fields: []string{"id"},
 	})
 	api.AddResource(&db.Outage{}, &resource.Resource{
-		DB:   cfg.Conn.DB,
-		Type: &db.Outage{},
+		DB:    s.conn.DB,
+		Type:  &db.Outage{},
+		Hooks: []resource.Hook{s.requireLogin},
 	})
-	r.PathPrefix("/api/").Handler(h)
+	r.HandleFunc("/api/login", s.login)
+	r.HandleFunc("/api/logout", s.logout)
+	r.PathPrefix("/api/").Handler(api.Handler())
 	r.PathPrefix("/").Handler(http.FileServer(HTTP))
 	go func() {
 		defer close(s.stopped)
