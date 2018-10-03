@@ -10,9 +10,10 @@ import (
 // User represents a user that can login and make changes to the site
 // configuration. Administrators can also manage users.
 type User struct {
-	ID       int64
-	Username string `gorm:"not null"`
-	Password string `gorm:"not null"`
+	ID       int64  `json:"id"`
+	Username string `gorm:"not null" json:"username"`
+	Password string `gorm:"not null" json:"-"`
+	IsAdmin  bool   `gorm:"not null" json:"is-admin"`
 }
 
 // GetName retrieves a descriptive name for groups of users.
