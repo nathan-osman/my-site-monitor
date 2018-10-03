@@ -99,6 +99,11 @@ func main() {
 					return err
 				}
 
+				// Save the user to the database
+				if err := conn.Save(u).Error; err != nil {
+					return err
+				}
+
 				return nil
 			},
 		},
