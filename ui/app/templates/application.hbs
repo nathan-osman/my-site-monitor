@@ -3,6 +3,17 @@
     <h2>
       {{#link-to 'index'}}My Site Monitor{{/link-to}}
     </h2>
+    <ul class="nav">
+      {{#if auth.user}}
+        <li>
+          <a href="#" {{action 'logout'}}>Logout</a>
+        </li>
+      {{else}}
+        <li>
+          {{#link-to 'login'}}Login{{/link-to}}
+        </li>
+      {{/if}}
+    </ul>
   </div>
 </div>
 
