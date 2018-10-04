@@ -43,7 +43,8 @@ input[type=submit],
   }
 }
 
-input[type=text] {
+input[type=text],
+input[type=password] {
   border: 1px solid #cccccc;
   display: block;
   margin: 4px 0;
