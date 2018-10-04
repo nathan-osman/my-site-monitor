@@ -1,0 +1,15 @@
+<h1>Login</h1>
+<p>
+  Please enter your username and password to login.
+</p>
+<form {{action 'login' on='submit'}}>
+  <label>
+    Username:
+    {{input value=username autofocus='autofocus'}}
+  </label>
+  <label>
+    Password:
+    {{input value=password}}
+  </label>
+  <button type="submit">Login</button>
+</form>
