@@ -55,6 +55,11 @@ func main() {
 			Usage:  "enable debug logging",
 		},
 		cli.StringFlag{
+			Name:   "secret-key",
+			EnvVar: "SECRET_KEY",
+			Usage:  "secret key for sessions",
+		},
+		cli.StringFlag{
 			Name:   "server-addr",
 			Value:  ":8000",
 			EnvVar: "SERVER_ADDR",
@@ -142,8 +147,9 @@ func main() {
 
 		// Start the server
 		s, err := server.New(&server.Config{
-			Addr: c.String("server-addr"),
-			Conn: conn,
+			Addr:      c.String("server-addr"),
+			Conn:      conn,
+			SecretKey: c.String("secret-key"),
 		})
 		if err != nil {
 			return err
