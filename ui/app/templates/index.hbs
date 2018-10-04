@@ -1,7 +1,21 @@
-<div>
-  Hello, world!
+<h1>Sites</h1>
+<p>
+  The current status for each registered site is shown below:
+</p>
+
+<div class="sites">
+  {{#each model as |site|}}
+    <div class="site">
+      <div class="info">
+        <div class="name">{{site.name}}</div>
+        <div class="status {{site.statusClass}}">
+          {{site.statusText}}
+        </div>
+      </div>
+    </div>
+  {{/each}}
 </div>
 
-<div>
-  {{#link-to 'site' 1}}Site 1{{/link-to}}
-</div>
+{{#if application.auth.user}}
+  {{#link-to 'sites.new' class='button'}}New{{/link-to}}
+{{/if}}
