@@ -5,6 +5,12 @@
 
 @font-face {
   font-family: 'Open Sans';
+  font-weight: bold;
+  src: url('fonts/opensans-bold-webfont.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Open Sans';
   font-weight: lighter;
   src: url('fonts/opensans-light-webfont.woff') format('woff');
 }
@@ -20,15 +26,17 @@ input {
 }
 
 button,
-input[type=submit] {
+input[type=submit],
+.button {
   background-color: #aa3939;
   border: none;
   color: #ffffff;
   cursor: pointer;
-  display: block;
+  display: inline-block;
   font-size: 14pt;
   margin: 32px 0;
   padding: 8px 32px;
+  text-decoration: none;
 
   &:hover {
     background-color: #d46a6a;
@@ -88,6 +96,37 @@ label {
       li {
         display: inline-block;
         font-size: 14pt;
+      }
+    }
+  }
+}
+
+.sites {
+  margin: 32px 0;
+
+  .site {
+    border: 1px solid #dddddd;
+    padding: 16px;
+
+    &:not(:first-child) {
+      border-top: none;
+    }
+
+    .info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .name {
+        font-size: 14pt;
+      }
+
+      .status {
+        font-weight: bold;
+
+        &.unknown { color: #cccccc; }
+        &.online  { color: #39aa39; }
+        &.offline { color: #aa3939; }
       }
     }
   }
