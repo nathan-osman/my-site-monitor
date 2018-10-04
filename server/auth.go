@@ -19,7 +19,7 @@ const (
 
 func (s *Server) requireLogin(p *resource.Params) error {
 	switch p.Action {
-	case resource.Create, resource.Delete, resource.Update:
+	case resource.BeforeCreate, resource.BeforeDelete, resource.BeforeUpdate:
 		session, _ := s.store.Get(p.Request.PlainRequest, sessionName)
 		v, _ := session.Values[sessionUserID]
 		if v != nil {

@@ -149,6 +149,7 @@ func main() {
 		s, err := server.New(&server.Config{
 			Addr:      c.String("server-addr"),
 			Conn:      conn,
+			Monitor:   m,
 			SecretKey: c.String("secret-key"),
 		})
 		if err != nil {

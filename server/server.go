@@ -9,6 +9,7 @@ import (
 	"github.com/manyminds/api2go"
 	"github.com/nathan-osman/api2go-resource"
 	"github.com/nathan-osman/my-site-monitor/db"
+	"github.com/nathan-osman/my-site-monitor/monitor"
 	"github.com/sirupsen/logrus"
 )
 
@@ -17,6 +18,7 @@ import (
 type Server struct {
 	listener net.Listener
 	conn     *db.Conn
+	monitor  *monitor.Monitor
 	store    *sessions.CookieStore
 	log      *logrus.Entry
 	stopped  chan bool
@@ -33,6 +35,7 @@ func New(cfg *Config) (*Server, error) {
 		s = &Server{
 			listener: l,
 			conn:     cfg.Conn,
+			monitor:  cfg.Monitor,
 			store:    sessions.NewCookieStore([]byte(cfg.SecretKey)),
 			log:      logrus.WithField("context", "server"),
 			stopped:  make(chan bool),
@@ -50,7 +53,7 @@ func New(cfg *Config) (*Server, error) {
 	api.AddResource(&db.Site{}, &resource.Resource{
 		DB:     s.conn.DB,
 		Type:   &db.Site{},
-		Hooks:  []resource.Hook{s.requireLogin, s.prepareSite},
+		Hooks:  []resource.Hook{s.requireLogin, s.siteHook},
 		Fields: []string{"id"},
 	})
 	api.AddResource(&db.Outage{}, &resource.Resource{
