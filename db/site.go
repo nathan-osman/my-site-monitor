@@ -1,6 +1,7 @@
 package db
 
 import (
+	"encoding/json"
 	"strconv"
 	"time"
 )
@@ -50,4 +51,16 @@ func (s *Site) GetID() string {
 func (s *Site) SetID(id string) error {
 	s.ID, _ = strconv.ParseInt(id, 10, 64)
 	return nil
+}
+
+// MarshalJSON ensures that dates are converted to ISO 8601.
+func (s *Site) MarshalJSON() ([]byte, error) {
+	type Alias Site
+	return json.Marshal(&struct {
+		*Alias
+		StatusTime string `json:"status-time"`
+	}{
+		Alias:      (*Alias)(s),
+		StatusTime: s.StatusTime.Format("2006-01-02T15:04:05-0700"),
+	})
 }

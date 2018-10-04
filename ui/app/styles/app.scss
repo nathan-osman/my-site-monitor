@@ -123,10 +123,16 @@ label {
 
       .status {
         font-weight: bold;
+        text-align: right;
 
         &.unknown { color: #cccccc; }
         &.online  { color: #39aa39; }
         &.offline { color: #aa3939; }
+
+        .since {
+          font-size: 10pt;
+          font-weight: normal;
+        }
       }
     }
   }

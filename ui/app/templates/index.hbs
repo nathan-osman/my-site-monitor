@@ -9,7 +9,8 @@
       <div class="info">
         <div class="name">{{site.name}}</div>
         <div class="status {{site.statusClass}}">
-          {{site.statusText}}
+          {{site.statusText}}<br>
+          <span class="since">{{moment-from-now site.statusTime}}</span>
         </div>
       </div>
     </div>
