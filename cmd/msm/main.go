@@ -8,6 +8,7 @@ import (
 
 	"github.com/howeyc/gopass"
 	"github.com/nathan-osman/my-site-monitor/db"
+	"github.com/nathan-osman/my-site-monitor/monitor"
 	"github.com/nathan-osman/my-site-monitor/server"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -132,6 +133,12 @@ func main() {
 		if err = conn.Migrate(); err != nil {
 			return err
 		}
+
+		// Create the monitor
+		m := monitor.New(&monitor.Config{
+			Conn: conn,
+		})
+		defer m.Close()
 
 		// Start the server
 		s, err := server.New(&server.Config{
