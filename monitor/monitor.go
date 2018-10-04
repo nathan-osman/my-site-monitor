@@ -49,6 +49,7 @@ func (m *Monitor) run() {
 		}
 		select {
 		case <-timerChan:
+		case <-m.triggerChan:
 		case <-m.stopChan:
 			return
 		}
