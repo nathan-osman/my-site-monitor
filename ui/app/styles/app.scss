@@ -1,6 +1,55 @@
+@font-face {
+  font-family: 'Open Sans';
+  src: url('fonts/opensans-regular-webfont.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-weight: lighter;
+  src: url('fonts/opensans-light-webfont.woff') format('woff');
+}
+
 body {
-  font-family: sans-serif;
   margin: 0;
+}
+
+body,
+button,
+input {
+  font-family: 'Open Sans', sans-serif;
+}
+
+button,
+input[type=submit] {
+  background-color: #aa3939;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: block;
+  font-size: 14pt;
+  margin: 32px 0;
+  padding: 8px 32px;
+
+  &:hover {
+    background-color: #d46a6a;
+  }
+}
+
+input[type=text] {
+  border: 1px solid #cccccc;
+  display: block;
+  margin: 4px 0;
+  padding: 8px;
+
+  &:focus {
+    border-color: #aa3939;
+    outline: none;
+  }
+}
+
+label {
+  display: block;
+  margin: 16px 0;
 }
 
 .container {
@@ -9,23 +58,37 @@ body {
 
 .header {
   background-color: #aa3939;
-  margin-bottom: 16px;
-  padding: 16px 0;
-
-  h2 {
-    font-size: 20pt;
-    font-weight: normal;
-    margin: 0;
-  }
+  border-bottom: 8px solid #d46a6a;
+  margin-bottom: 32px;
+  padding: 8px 0;
 
   a {
-    color: #d46a6a;
+    color: #ffaaaa;
     text-decoration: none;
     transition: color 200ms ease;
 
     &:hover {
-      color: #ffaaaa;
+      color: #ffffff;
       transition: color 200ms ease;
+    }
+  }
+
+  .container {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+
+    h2 {
+      font-size: 24pt;
+      font-weight: lighter;
+      margin: 0;
+    }
+
+    .nav {
+      li {
+        display: inline-block;
+        font-size: 14pt;
+      }
     }
   }
 }
