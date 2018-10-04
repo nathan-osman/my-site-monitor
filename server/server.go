@@ -50,7 +50,7 @@ func New(cfg *Config) (*Server, error) {
 	api.AddResource(&db.Site{}, &resource.Resource{
 		DB:     s.conn.DB,
 		Type:   &db.Site{},
-		Hooks:  []resource.Hook{s.requireLogin},
+		Hooks:  []resource.Hook{s.requireLogin, s.prepareSite},
 		Fields: []string{"id"},
 	})
 	api.AddResource(&db.Outage{}, &resource.Resource{

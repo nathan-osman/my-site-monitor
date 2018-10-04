@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -11,10 +10,8 @@ import (
 	"github.com/nathan-osman/my-site-monitor/db"
 )
 
-type key int
-
 const (
-	contextUser key = iota
+	contextUser = "user"
 
 	sessionName   = "session"
 	sessionUserID = "userID"
@@ -28,12 +25,9 @@ func (s *Server) requireLogin(p *resource.Params) error {
 		if v != nil {
 			u := &db.User{}
 			if err := s.conn.First(u, v).Error; err == nil {
-				p.Request.PlainRequest = p.Request.PlainRequest.WithContext(
-					context.WithValue(
-						p.Request.PlainRequest.Context(),
-						contextUser,
-						u,
-					),
+				p.Request.Context.Set(
+					contextUser,
+					u,
 				)
 				return nil
 			}
