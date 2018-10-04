@@ -16,23 +16,24 @@ const (
 
 // Site represents a website being monitored.
 type Site struct {
-	ID int64
+	ID int64 `json:"id"`
 
 	// URL to poll and a descriptive name for the site
-	URL  string `gorm:"not null"`
-	Name string `gorm:"not null"`
+	URL  string `gorm:"not null" json:"url"`
+	Name string `gorm:"not null" json:"name"`
 
-	// Poll interval and the time since the last update
-	PollInterval int64 `gorm:"not null"`
-	PollTime     time.Time
+	// Poll interval and the time of last and next poll
+	PollInterval int64     `gorm:"not null" json:"poll-interval"`
+	LastPoll     time.Time `gorm:"not null" json:"last-poll"`
+	NextPoll     time.Time `gorm:"not null" json:"next-poll"`
 
 	// Current status of the site and the time since it last changed
-	Status     int `gorm:"not null"`
-	StatusTime time.Time
+	Status     int       `gorm:"not null" json:"status"`
+	StatusTime time.Time `json:"status-time"`
 
 	// User that created the site
-	User   *User `gorm:"ForeignKey:UserID"`
-	UserID int64 `sql:"type:int REFERENCES users(id) ON DELETE CASCADE"`
+	User   *User `gorm:"ForeignKey:UserID" json:"-"`
+	UserID int64 `sql:"type:int REFERENCES users(id) ON DELETE CASCADE" json:"user-id"`
 }
 
 // GetName retrieves a descriptive name for groups of sites.
