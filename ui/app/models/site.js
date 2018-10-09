@@ -7,9 +7,13 @@ export default DS.Model.extend({
   pollInterval: DS.attr('number'),
   lastPoll: DS.attr('date'),
   nextPoll: DS.attr('date'),
-  status: DS.attr('string'),
+  status: DS.attr('number'),
   statusTime: DS.attr('date'),
   user: DS.belongsTo('user'),
+
+  isUnknown: computed('status', function() {
+    return this.get('status') == 0;
+  }),
 
   statusClass: computed('status', function() {
     return {

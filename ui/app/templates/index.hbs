@@ -7,10 +7,22 @@
   {{#each model as |site|}}
     <div class="site">
       <div class="info">
-        <div class="name">{{site.name}}</div>
+        <div class="name">
+          {{site.name}}<br>
+          <span class="since">
+            {{#if site.isUnknown}}
+              not yet polled
+            {{else}}
+              polled {{moment-from-now site.lastPoll}}
+            {{/if}}
+          </span>
+        </div>
         <div class="status {{site.statusClass}}">
           {{site.statusText}}<br>
-          <span class="since">{{moment-from-now site.statusTime}}</span>
+          <span class="since">
+            since
+            {{moment-from-now site.statusTime}}
+          </span>
         </div>
       </div>
     </div>

@@ -1,3 +1,6 @@
+$desktop: "screen and (min-width: 992px)";
+$mobile:  "screen and (max-width: 991px)";
+
 @font-face {
   font-family: 'Open Sans';
   src: url('fonts/opensans-regular-webfont.woff') format('woff');
@@ -13,6 +16,10 @@
   font-family: 'Open Sans';
   font-weight: lighter;
   src: url('fonts/opensans-light-webfont.woff') format('woff');
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -105,35 +112,50 @@ label {
 .sites {
   margin: 32px 0;
 
+  @media #{$desktop} {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
   .site {
     border: 1px solid #dddddd;
     padding: 16px;
 
-    &:not(:first-child) {
-      border-top: none;
+    @media #{$desktop} {
+      flex-basis: 50%;
+
+      &:not(:nth-child(1)):not(:nth-child(2)) {
+        border-top: none;
+      }
+
+      &:nth-child(even) {
+        border-left: none;
+      }
+    }
+
+    @media #{$mobile} {
+      &:not(:nth-child(1)) {
+        border-top: none;
+      }
     }
 
     .info {
-      display: flex;
       align-items: center;
+      display: flex;
+      font-weight: bold;
       justify-content: space-between;
 
-      .name {
-        font-size: 14pt;
-      }
-
       .status {
-        font-weight: bold;
         text-align: right;
 
         &.unknown { color: #cccccc; }
         &.online  { color: #39aa39; }
         &.offline { color: #aa3939; }
+      }
 
-        .since {
-          font-size: 10pt;
-          font-weight: normal;
-        }
+      .since {
+        font-size: 10pt;
+        font-weight: normal;
       }
     }
   }

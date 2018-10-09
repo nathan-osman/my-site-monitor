@@ -15,6 +15,10 @@ const (
 	StatusDown = 2
 )
 
+const (
+	iso8601 = "2006-01-02T15:04:05-0700"
+)
+
 // Site represents a website being monitored.
 type Site struct {
 	ID int64 `json:"id"`
@@ -58,9 +62,13 @@ func (s *Site) MarshalJSON() ([]byte, error) {
 	type Alias Site
 	return json.Marshal(&struct {
 		*Alias
+		LastPoll   string `json:"last-poll"`
+		NextPoll   string `json:"next-poll"`
 		StatusTime string `json:"status-time"`
 	}{
 		Alias:      (*Alias)(s),
-		StatusTime: s.StatusTime.Format("2006-01-02T15:04:05-0700"),
+		LastPoll:   s.LastPoll.Format(iso8601),
+		NextPoll:   s.NextPoll.Format(iso8601),
+		StatusTime: s.StatusTime.Format(iso8601),
 	})
 }
