@@ -9,6 +9,7 @@ import (
 	"github.com/howeyc/gopass"
 	"github.com/nathan-osman/my-site-monitor/db"
 	"github.com/nathan-osman/my-site-monitor/monitor"
+	"github.com/nathan-osman/my-site-monitor/notifier"
 	"github.com/nathan-osman/my-site-monitor/server"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -64,6 +65,26 @@ func main() {
 			Value:  ":8000",
 			EnvVar: "SERVER_ADDR",
 			Usage:  "server address",
+		},
+		cli.StringFlag{
+			Name:   "twitter-access-secret",
+			EnvVar: "TWITTER_ACCESS_SECRET",
+			Usage:  "Twitter API access secret",
+		},
+		cli.StringFlag{
+			Name:   "twitter-access-token",
+			EnvVar: "TWITTER_ACCESS_TOKEN",
+			Usage:  "Twitter API access token",
+		},
+		cli.StringFlag{
+			Name:   "twitter-consumer-key",
+			EnvVar: "TWITTER_CONSUMER_KEY",
+			Usage:  "Twitter API consumer key",
+		},
+		cli.StringFlag{
+			Name:   "twitter-consumer-secret",
+			EnvVar: "TWITTER_CONSUMER_SECRET",
+			Usage:  "Twitter API consumer secret",
 		},
 	}
 	app.Commands = []cli.Command{
@@ -138,6 +159,16 @@ func main() {
 		if err = conn.Migrate(); err != nil {
 			return err
 		}
+
+		// Create the notifier
+		n := notifier.New(&notifier.Config{
+			Conn:           conn,
+			ConsumerKey:    c.String("twitter-consumer-key"),
+			ConsumerSecret: c.String("twitter-consumer-secret"),
+			AccessToken:    c.String("twitter-access-token"),
+			AccessSecret:   c.String("twitter-access-secret"),
+		})
+		defer n.Close()
 
 		// Create the monitor
 		m := monitor.New(&monitor.Config{
