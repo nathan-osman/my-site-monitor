@@ -7,7 +7,9 @@ export default Controller.extend({
         url: this.get('url'),
         name: this.get('name'),
         pollInterval: this.get('pollInterval')
-      }).save();
+      }).save().then(
+        () => { this.transitionToRoute('index'); }
+      );
     }
   }
 });
