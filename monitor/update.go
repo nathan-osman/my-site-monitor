@@ -42,7 +42,6 @@ func (m *Monitor) update(s *db.Site) error {
 				if oldStatus == db.StatusUnknown && s.Status == db.StatusUp {
 					break
 				}
-				triggerNotifier = true
 				o := &db.Outage{}
 				switch s.Status {
 				case db.StatusDown:
@@ -52,14 +51,18 @@ func (m *Monitor) update(s *db.Site) error {
 					o.SiteID = s.ID
 				case db.StatusUp:
 					m.log.Infof("%s has come back up", s.Name)
-					if err := conn.
+					if db := conn.
 						Order("start_time DESC").
 						Where("site_id = ?", s.ID).
-						First(o).Error; err != nil {
+						First(o); db.Error != nil {
+						if db.RecordNotFound() {
+							return nil
+						}
 						return err
 					}
 					o.EndTime = now
 				}
+				triggerNotifier = true
 				if err := conn.Save(o).Error; err != nil {
 					return err
 				}
