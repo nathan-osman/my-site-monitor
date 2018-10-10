@@ -26,6 +26,7 @@ func (n *Notifier) tweet(conn *db.Conn, o *db.Outage) error {
 	if len(status) > 280 {
 		status = status[:279] + "…"
 	}
+	n.log.Infof("sending tweet for %s", o.Site.Name)
 	_, err := n.api.PostTweet(status, nil)
 	return err
 }
