@@ -37,6 +37,7 @@ func (m *Monitor) update(s *db.Site) error {
 		}
 		if oldStatus != s.Status {
 			s.StatusTime = now
+		outage:
 			for {
 				// Don't try to update an outage if the status was unknown
 				if oldStatus == db.StatusUnknown && s.Status == db.StatusUp {
@@ -56,9 +57,9 @@ func (m *Monitor) update(s *db.Site) error {
 						Where("site_id = ?", s.ID).
 						First(o); db.Error != nil {
 						if db.RecordNotFound() {
-							return nil
+							break outage
 						}
-						return err
+						return db.Error
 					}
 					o.EndTime = now
 				}
