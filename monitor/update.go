@@ -61,6 +61,7 @@ func (m *Monitor) update(s *db.Site) error {
 				if err := conn.Save(o).Error; err != nil {
 					return err
 				}
+				m.notifier.Trigger()
 				break
 			}
 		}

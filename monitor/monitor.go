@@ -6,12 +6,14 @@ import (
 	"time"
 
 	"github.com/nathan-osman/my-site-monitor/db"
+	"github.com/nathan-osman/my-site-monitor/notifier"
 	"github.com/sirupsen/logrus"
 )
 
 // Monitor checks the status of the sites registered in the database.
 type Monitor struct {
 	conn        *db.Conn
+	notifier    *notifier.Notifier
 	client      *http.Client
 	log         *logrus.Entry
 	triggerChan chan bool
@@ -59,7 +61,8 @@ func (m *Monitor) run() {
 // New creates a new monitor.
 func New(cfg *Config) *Monitor {
 	m := &Monitor{
-		conn: cfg.Conn,
+		conn:     cfg.Conn,
+		notifier: cfg.Notifier,
 		client: &http.Client{
 			Transport: &http.Transport{
 				Dial: (&net.Dialer{

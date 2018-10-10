@@ -172,7 +172,8 @@ func main() {
 
 		// Create the monitor
 		m := monitor.New(&monitor.Config{
-			Conn: conn,
+			Conn:     conn,
+			Notifier: n,
 		})
 		defer m.Close()
 
