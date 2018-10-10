@@ -21,7 +21,8 @@ func (m *Monitor) check(s *db.Site) error {
 }
 
 func (m *Monitor) update(s *db.Site) error {
-	return m.conn.Transaction(func(conn *db.Conn) error {
+	triggerNotifier := false
+	err := m.conn.Transaction(func(conn *db.Conn) error {
 		var (
 			now       = time.Now()
 			err       = m.check(s)
@@ -41,6 +42,7 @@ func (m *Monitor) update(s *db.Site) error {
 				if oldStatus == db.StatusUnknown && s.Status == db.StatusUp {
 					break
 				}
+				triggerNotifier = true
 				o := &db.Outage{}
 				switch s.Status {
 				case db.StatusDown:
@@ -61,10 +63,13 @@ func (m *Monitor) update(s *db.Site) error {
 				if err := conn.Save(o).Error; err != nil {
 					return err
 				}
-				m.notifier.Trigger()
 				break
 			}
 		}
 		return conn.Save(s).Error
 	})
+	if triggerNotifier {
+		m.notifier.Trigger()
+	}
+	return err
 }

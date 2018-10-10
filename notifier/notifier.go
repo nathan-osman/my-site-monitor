@@ -1,6 +1,8 @@
 package notifier
 
 import (
+	"time"
+
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/nathan-osman/my-site-monitor/db"
 	"github.com/sirupsen/logrus"
@@ -21,9 +23,30 @@ func (n *Notifier) run() {
 	defer n.log.Info("notifier stopped")
 	n.log.Info("notifier started")
 	for {
-		// TODO: check to see if notifications for any outages have not been sent
-
+		var timerChan <-chan time.Time
+		err := n.conn.Transaction(func(conn *db.Conn) error {
+			var (
+				o = &db.Outage{}
+			)
+			if db := conn.
+				Preload("Site").
+				Order("start_time").
+				Where("start_notification_sent = ?", false).
+				Or("end_time IS NOT NULL AND end_notification_sent = ?", false).
+				First(o); db.Error != nil {
+				if !db.RecordNotFound() {
+					return db.Error
+				}
+				return nil
+			}
+			return n.tweet(conn, o)
+		})
+		if err != nil {
+			n.log.Errorf("%s - retrying in 30s", err)
+			timerChan = time.After(30 * time.Second)
+		}
 		select {
+		case <-timerChan:
 		case <-n.triggerChan:
 		case <-n.stopChan:
 			return

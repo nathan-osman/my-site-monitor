@@ -13,6 +13,10 @@ type Outage struct {
 	StartTime time.Time `gorm:"not null"`
 	EndTime   time.Time
 
+	// Whether the two notifications have been sent yet or not
+	StartNotificationSent bool `gorm:"not null" json:"-"`
+	EndNotificationSent   bool `gorm:"not null" json:"-"`
+
 	// Information about the error
 	Description string `gorm:"not null"`
 
