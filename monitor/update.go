@@ -20,60 +20,53 @@ func (m *Monitor) check(s *db.Site) error {
 	return nil
 }
 
-func (m *Monitor) update(s *db.Site) error {
-	triggerNotifier := false
-	err := m.conn.Transaction(func(conn *db.Conn) error {
-		var (
-			now       = time.Now()
-			err       = m.check(s)
-			oldStatus = s.Status
-		)
-		s.LastPoll = now
-		s.NextPoll = now.Add(time.Duration(s.PollInterval) * time.Second)
-		if err == nil {
-			s.Status = db.StatusUp
-		} else {
-			s.Status = db.StatusDown
-		}
-		if oldStatus != s.Status {
-			s.StatusTime = now
-		outage:
-			for {
-				// Don't try to update an outage if the status was unknown
-				if oldStatus == db.StatusUnknown && s.Status == db.StatusUp {
-					break
-				}
-				o := &db.Outage{}
-				switch s.Status {
-				case db.StatusDown:
-					m.log.Infof("%s is down", s.Name)
-					o.StartTime = now
-					o.Description = err.Error()
-					o.SiteID = s.ID
-				case db.StatusUp:
-					m.log.Infof("%s has come back up", s.Name)
-					if db := conn.
-						Order("start_time DESC").
-						Where("site_id = ?", s.ID).
-						First(o); db.Error != nil {
-						if db.RecordNotFound() {
-							break outage
-						}
-						return db.Error
-					}
-					o.EndTime = now
-				}
-				triggerNotifier = true
-				if err := conn.Save(o).Error; err != nil {
-					return err
-				}
-				break
+func (m *Monitor) update(conn *db.Conn, s *db.Site) error {
+	var (
+		err       = m.check(s)
+		now       = time.Now()
+		oldStatus = s.Status
+	)
+	s.LastPoll = now
+	s.NextPoll = now.Add(time.Duration(s.PollInterval) * time.Second)
+	if err == nil {
+		s.Status = db.StatusUp
+	} else {
+		s.Status = db.StatusDown
+	}
+	if oldStatus != s.Status {
+		s.StatusTime = now
+	}
+	if err := conn.Save(s).Error; err != nil {
+		return err
+	}
+	// Don't create / update an outage if the status was unknown
+	if oldStatus == s.Status || oldStatus == db.StatusUnknown {
+		return nil
+	}
+	o := &db.Outage{}
+	switch s.Status {
+	case db.StatusDown:
+		m.log.Infof("%s is offline", s.Name)
+		o.StartTime = now
+		o.Description = err.Error()
+		o.SiteID = s.ID
+	case db.StatusUp:
+		m.log.Infof("%s is back online", s.Name)
+		if db := conn.
+			Set("gorm:query_option", "FOR UPDATE").
+			Order("start_time DESC").
+			Where("site_id = ?", s.ID).
+			First(o); db.Error != nil {
+			if db.RecordNotFound() {
+				return nil
 			}
 		}
-		return conn.Save(s).Error
-	})
-	if triggerNotifier {
-		m.notifier.Trigger()
+		o.EndTime = now
 	}
-	return err
+	// Lock the table so the trigger will cause the notifier to block
+	if err := conn.Exec("LOCK TABLE outages").Error; err != nil {
+		return err
+	}
+	m.notifier.Trigger()
+	return conn.Save(o).Error
 }

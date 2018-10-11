@@ -7,6 +7,7 @@ import (
 
 	"github.com/nathan-osman/my-site-monitor/db"
 	"github.com/nathan-osman/my-site-monitor/notifier"
+	"github.com/rickb777/date/period"
 	"github.com/sirupsen/logrus"
 )
 
@@ -27,27 +28,38 @@ func (m *Monitor) run() {
 	m.log.Info("monitor started")
 	for {
 		var timerChan <-chan time.Time
-		for {
-			var (
-				s   = &db.Site{}
-				now = time.Now()
-			)
-			if db := m.conn.Order("next_poll").First(s); db.Error != nil {
-				if !db.RecordNotFound() {
-					m.log.Errorf("%s - retrying in 30s", db.Error.Error())
-					timerChan = time.After(30 * time.Second)
+		err := m.conn.Transaction(func(conn *db.Conn) error {
+			for {
+				var (
+					s   = &db.Site{}
+					now = time.Now()
+				)
+				if db := conn.
+					Set("gorm:query_option", "FOR UPDATE").
+					Order("next_poll").
+					First(s); db.Error != nil {
+					if !db.RecordNotFound() {
+						return db.Error
+					}
+					return nil
 				}
-				break
+				if s.NextPoll.After(now) {
+					m.log.Debugf(
+						"waiting %s to check %s",
+						period.Between(now, s.NextPoll).Format(),
+						s.Name,
+					)
+					timerChan = time.After(s.NextPoll.Sub(now))
+					return nil
+				}
+				if err := m.update(conn, s); err != nil {
+					return err
+				}
 			}
-			if s.NextPoll.After(now) {
-				d := s.NextPoll.Sub(now)
-				m.log.Debugf("waiting %s to check %s", d, s.Name)
-				timerChan = time.After(d)
-				break
-			}
-			if err := m.update(s); err != nil {
-				m.log.Errorf("%s", err.Error())
-			}
+		})
+		if err != nil {
+			m.log.Errorf("%s - retrying in 30s", err)
+			timerChan = time.After(30 * time.Second)
 		}
 		select {
 		case <-timerChan:
