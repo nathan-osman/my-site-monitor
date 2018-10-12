@@ -2,27 +2,26 @@ package db
 
 import (
 	"strconv"
-	"time"
 )
 
 // Outage represents a period of time during which a site was inaccessible.
 type Outage struct {
-	ID int64
+	ID int64 `json:"id"`
 
-	// Start and ending time of the outage (may be null if ongoing)
-	StartTime time.Time `gorm:"not null"`
-	EndTime   time.Time
+	// Start and ending time of the outage (may be 0 if ongoing)
+	StartTime int64 `gorm:"not null" json:"start-time"`
+	EndTime   int64 `gorm:"not null" json:"end-time"`
 
 	// Whether the two notifications have been sent yet or not
 	StartNotificationSent bool `gorm:"not null" json:"-"`
 	EndNotificationSent   bool `gorm:"not null" json:"-"`
 
 	// Information about the error
-	Description string `gorm:"not null"`
+	Description string `gorm:"not null" json:"description"`
 
 	// Site that is experiencing the outage
-	Site   *Site `gorm:"ForeignKey:SiteID"`
-	SiteID int64 `sql:"type:int REFERENCES sites(id) ON DELETE CASCADE"`
+	Site   *Site `gorm:"ForeignKey:SiteID" json:"-"`
+	SiteID int64 `sql:"type:int REFERENCES sites(id) ON DELETE CASCADE" json:"site-id"`
 }
 
 // GetName retrieves a descriptive name for groups of outages
