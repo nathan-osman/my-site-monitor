@@ -6,6 +6,9 @@
     <ul class="nav">
       {{#if auth.user}}
         <li>
+          {{#link-to 'sites'}}Sites{{/link-to}}
+        </li>
+        <li>
           <a href="#" {{action 'logout'}}>Logout</a>
         </li>
       {{else}}

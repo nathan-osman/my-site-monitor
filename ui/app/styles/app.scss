@@ -41,7 +41,6 @@ input[type=submit],
   cursor: pointer;
   display: inline-block;
   font-size: 14pt;
-  margin: 32px 0;
   padding: 8px 32px;
   text-decoration: none;
 
@@ -66,6 +65,10 @@ input[type=password] {
 label {
   display: block;
   margin: 16px 0;
+}
+
+.buttons {
+  margin: 32px 0;
 }
 
 .container {
@@ -104,12 +107,13 @@ label {
       li {
         display: inline-block;
         font-size: 14pt;
+        margin-left: 16px;
       }
     }
   }
 }
 
-.sites {
+.dashboard {
   margin: 32px 0;
 
   @media #{$desktop} {
@@ -157,6 +161,30 @@ label {
         font-size: 10pt;
         font-weight: normal;
       }
+    }
+  }
+}
+
+.sites {
+  margin: 32px 0;
+
+  .site {
+    align-items: center;
+    border: 1px solid #dddddd;
+    display: flex;
+    padding: 8px;
+
+    &:not(:nth-child(1)) {
+      border-top: none;
+    }
+
+    .name {
+      flex-grow: 1;
+      font-size: 12pt;
+    }
+
+    .actions {
+      text-align: right;
     }
   }
 }

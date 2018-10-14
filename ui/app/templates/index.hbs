@@ -1,9 +1,9 @@
-<h1>Sites</h1>
+<h1>Dashboard</h1>
 <p>
   The current status for each registered site is shown below:
 </p>
 
-<div class="sites">
+<div class="dashboard">
   {{#each model as |site|}}
     <div class="site">
       <div class="info">
@@ -28,7 +28,3 @@
     </div>
   {{/each}}
 </div>
-
-{{#if application.auth.user}}
-  {{#link-to 'sites.new' class='button'}}New{{/link-to}}
-{{/if}}

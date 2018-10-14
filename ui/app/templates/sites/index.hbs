@@ -1,0 +1,19 @@
+<h1>Sites</h1>
+<p>
+  The sites currently being monitored are shown below:
+</p>
+
+<div class="sites">
+  {{#each model as |site|}}
+    <div class="site">
+      <div class="name">
+        {{site.name}}
+      </div>
+      <div class="actions">
+        <a href="#" class="button" {{action 'delete' site}}>Delete</a>
+      </div>
+    </div>
+  {{/each}}
+</div>
+
+{{#link-to 'sites.new' class='button'}}New{{/link-to}}
