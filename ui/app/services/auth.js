@@ -3,6 +3,7 @@ import Service from '@ember/service';
 import { computed } from '@ember/object';
 
 export default Service.extend({
+  notify: Ember.inject.service(),
   user: null,
 
   /**
@@ -43,7 +44,10 @@ export default Service.extend({
         password: password
       })
     })
-    .done((data) => { this.set('user', data); });
+    .done((data) => {
+      this.set('user', data);
+      this.get('notify').success("Welcome back, " + data.username + ".");
+    });
   },
 
   /**
@@ -55,6 +59,9 @@ export default Service.extend({
       type: 'POST',
       url: '/api/logout'
     })
-    .done(() => { this.set('user', null); });
+    .done(() => {
+      this.set('user', null);
+      this.get('notify').success("You have been logged out.");
+    });
   }
 });

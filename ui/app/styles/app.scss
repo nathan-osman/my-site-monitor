@@ -67,6 +67,15 @@ label {
   margin: 16px 0;
 }
 
+.ember-notify-default .ember-notify {
+  border: none;
+  color: #ffffff;
+
+  &.success {
+    background-color: #39aa39;
+  }
+}
+
 .buttons {
   margin: 32px 0;
 }
