@@ -20,7 +20,9 @@ func (m *Monitor) check(s *db.Site) error {
 	return nil
 }
 
-func (m *Monitor) update(conn *db.Conn, s *db.Site) error {
+// update polls the site and updates it in the database.
+// The first return value indicates whether the notifier should be triggered.
+func (m *Monitor) update(conn *db.Conn, s *db.Site) (bool, error) {
 	var (
 		err       = m.check(s)
 		now       = time.Now()
@@ -38,11 +40,11 @@ func (m *Monitor) update(conn *db.Conn, s *db.Site) error {
 		s.StatusTime = &now
 	}
 	if err := conn.Save(s).Error; err != nil {
-		return err
+		return false, err
 	}
 	// Don't create / update an outage if the status was unknown
 	if oldStatus == s.Status || oldStatus == db.StatusUnknown {
-		return nil
+		return false, nil
 	}
 	o := &db.Outage{}
 	switch s.Status {
@@ -54,20 +56,13 @@ func (m *Monitor) update(conn *db.Conn, s *db.Site) error {
 	case db.StatusUp:
 		m.log.Infof("%s is back online", s.Name)
 		if db := conn.
-			Set("gorm:query_option", "FOR UPDATE").
-			Order("start_time DESC").
-			Where("site_id = ?", s.ID).
-			First(o); db.Error != nil {
+			Model(o).
+			Where("end_time IS NULL AND site_id = ?", s.ID).
+			Update("end_time", &now); db.Error != nil {
 			if db.RecordNotFound() {
-				return nil
+				return false, nil
 			}
 		}
-		o.EndTime = &now
 	}
-	// Lock the table so the trigger will cause the notifier to block
-	if err := conn.Exec("LOCK TABLE outages").Error; err != nil {
-		return err
-	}
-	m.notifier.Trigger()
-	return conn.Save(o).Error
+	return true, conn.Save(o).Error
 }

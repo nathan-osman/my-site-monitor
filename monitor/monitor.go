@@ -27,7 +27,10 @@ func (m *Monitor) run() {
 	defer m.log.Info("monitor stopped")
 	m.log.Info("monitor started")
 	for {
-		var timerChan <-chan time.Time
+		var (
+			timerChan <-chan time.Time
+			trigger   bool
+		)
 		err := m.conn.Transaction(func(conn *db.Conn) error {
 			for {
 				var (
@@ -52,11 +55,16 @@ func (m *Monitor) run() {
 					timerChan = time.After(s.NextPoll.Sub(now))
 					return nil
 				}
-				if err := m.update(conn, s); err != nil {
+				t, err := m.update(conn, s)
+				if err != nil {
 					return err
 				}
+				trigger = t
 			}
 		})
+		if trigger {
+			m.notifier.Trigger()
+		}
 		if err != nil {
 			m.log.Errorf("%s - retrying in 30s", err)
 			timerChan = time.After(30 * time.Second)
