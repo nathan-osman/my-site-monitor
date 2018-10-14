@@ -6,8 +6,11 @@
 <div class="sites">
   {{#each model as |site|}}
     <div class="site">
-      <div class="name">
-        {{site.name}}
+      <div class="info">
+        <div class="name">{{site.name}}</div>
+        <div class="interval">
+          Interval: {{moment-duration site.pollInterval 'seconds'}}
+        </div>
       </div>
       <div class="actions">
         <a href="#" class="button" {{action 'delete' site}}>Delete</a>

@@ -178,9 +178,16 @@ label {
       border-top: none;
     }
 
-    .name {
+    .info {
       flex-grow: 1;
-      font-size: 12pt;
+
+      .name {
+        font-weight: bold;
+      }
+
+      .interval {
+        font-size: 10pt;
+      }
     }
 
     .actions {
