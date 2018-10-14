@@ -63,6 +63,7 @@ func New(cfg *Config) (*Server, error) {
 	})
 	r.HandleFunc("/api/login", s.login)
 	r.HandleFunc("/api/logout", s.logout)
+	r.HandleFunc("/api/users/me", s.me)
 	r.PathPrefix("/api/").Handler(api.Handler())
 	r.PathPrefix("/").Handler(http.FileServer(HTTP))
 	go func() {

@@ -95,3 +95,16 @@ func (s *Server) logout(w http.ResponseWriter, r *http.Request) {
 	session.Save(r, w)
 	writeJSON(w, &struct{}{}, http.StatusOK)
 }
+
+func (s *Server) me(w http.ResponseWriter, r *http.Request) {
+	session, _ := s.store.Get(r, sessionName)
+	v, _ := session.Values[sessionUserID]
+	if v != nil {
+		u := &db.User{}
+		if err := s.conn.First(u, v).Error; err == nil {
+			writeJSON(w, u, http.StatusOK)
+			return
+		}
+	}
+	writeError(w, http.StatusForbidden)
+}
