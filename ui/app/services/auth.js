@@ -5,6 +5,20 @@ export default Service.extend({
   user: null,
 
   /**
+   * Attempt to restore a session by obtaining the user's info
+   * @return {Promise}
+   */
+  restore() {
+    return new Ember.RSVP.Promise((resolve) => {
+      Ember.$.ajax({
+        url: '/api/users/me'
+      })
+      .done((data) => { this.set('user', data); })
+      .always(() => { resolve(); })
+    });
+  },
+
+  /**
    * Attempt to login using the provided credentials
    * @param {String} username
    * @param {String} password
@@ -19,7 +33,8 @@ export default Service.extend({
         username: username,
         password: password
       })
-    }).done((data) => { this.set('user', data); });
+    })
+    .done((data) => { this.set('user', data); });
   },
 
   /**
@@ -30,6 +45,7 @@ export default Service.extend({
     return Ember.$.ajax({
       type: 'POST',
       url: '/api/logout'
-    }).done(() => { this.set('user', null); });
+    })
+    .done(() => { this.set('user', null); });
   }
 });
