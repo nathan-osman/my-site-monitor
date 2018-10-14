@@ -4,7 +4,7 @@
       {{#link-to 'index'}}My Site Monitor{{/link-to}}
     </h2>
     <ul class="nav">
-      {{#if auth.user}}
+      {{#if auth.isAuthenticated}}
         <li>
           {{#link-to 'sites'}}Sites{{/link-to}}
         </li>

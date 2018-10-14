@@ -1,8 +1,17 @@
 import Ember from 'ember';
 import Service from '@ember/service';
+import { computed } from '@ember/object';
 
 export default Service.extend({
   user: null,
+
+  /**
+   * Determine if the user is authenticated
+   * @return {Boolean}
+   */
+  isAuthenticated: computed('user', function() {
+    return this.get('user') !== null;
+  }),
 
   /**
    * Attempt to restore a session by obtaining the user's info
