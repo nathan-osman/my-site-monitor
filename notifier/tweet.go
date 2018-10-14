@@ -16,7 +16,7 @@ func (n *Notifier) tweet(conn *db.Conn, o *db.Outage) error {
 		status = fmt.Sprintf(
 			"%s is back online - site was offline for %s",
 			o.Site.Name,
-			period.Between(o.StartTime, o.EndTime).Format(),
+			period.Between(o.StartTime, *o.EndTime).Format(),
 		)
 		o.EndNotificationSent = true
 	}
