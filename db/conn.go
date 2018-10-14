@@ -40,6 +40,14 @@ func New(cfg *Config) (*Conn, error) {
 	return c, nil
 }
 
+// FilteredError filters the Error value by ignoring RecordNotFound errors.
+func FilteredError(db *gorm.DB) error {
+	if db.RecordNotFound() {
+		return nil
+	}
+	return db.Error
+}
+
 // Migrate performs all database migrations.
 func (c *Conn) Migrate() error {
 	c.log.Info("performing migrations...")

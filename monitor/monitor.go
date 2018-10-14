@@ -62,12 +62,11 @@ func (m *Monitor) run() {
 				trigger = t
 			}
 		})
-		if trigger {
-			m.notifier.Trigger()
-		}
 		if err != nil {
 			m.log.Errorf("%s - retrying in 30s", err)
 			timerChan = time.After(30 * time.Second)
+		} else if trigger {
+			m.notifier.Trigger()
 		}
 		select {
 		case <-timerChan:

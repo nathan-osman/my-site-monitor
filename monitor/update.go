@@ -53,16 +53,15 @@ func (m *Monitor) update(conn *db.Conn, s *db.Site) (bool, error) {
 		o.StartTime = now
 		o.Description = err.Error()
 		o.SiteID = s.ID
+		return true, conn.Save(o).Error
 	case db.StatusUp:
 		m.log.Infof("%s is back online", s.Name)
-		if db := conn.
-			Model(o).
-			Where("end_time IS NULL AND site_id = ?", s.ID).
-			Update("end_time", &now); db.Error != nil {
-			if db.RecordNotFound() {
-				return false, nil
-			}
-		}
+		return true, db.FilteredError(
+			conn.
+				Model(o).
+				Where("end_time IS NULL AND site_id = ?", s.ID).
+				Update("end_time", &now),
+		)
 	}
-	return true, conn.Save(o).Error
+	return false, nil
 }
