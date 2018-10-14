@@ -24,17 +24,18 @@ func (m *Monitor) update(conn *db.Conn, s *db.Site) error {
 	var (
 		err       = m.check(s)
 		now       = time.Now()
+		nextPoll  = now.Add(time.Duration(s.PollInterval) * time.Second)
 		oldStatus = s.Status
 	)
-	s.LastPoll = now
-	s.NextPoll = now.Add(time.Duration(s.PollInterval) * time.Second)
+	s.LastPoll = &now
+	s.NextPoll = &nextPoll
 	if err == nil {
 		s.Status = db.StatusUp
 	} else {
 		s.Status = db.StatusDown
 	}
 	if oldStatus != s.Status {
-		s.StatusTime = now
+		s.StatusTime = &now
 	}
 	if err := conn.Save(s).Error; err != nil {
 		return err
@@ -61,7 +62,7 @@ func (m *Monitor) update(conn *db.Conn, s *db.Site) error {
 				return nil
 			}
 		}
-		o.EndTime = now
+		o.EndTime = &now
 	}
 	// Lock the table so the trigger will cause the notifier to block
 	if err := conn.Exec("LOCK TABLE outages").Error; err != nil {

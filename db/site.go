@@ -2,6 +2,7 @@ package db
 
 import (
 	"strconv"
+	"time"
 )
 
 const (
@@ -22,13 +23,13 @@ type Site struct {
 	Name string `gorm:"not null" json:"name"`
 
 	// Poll interval and the time of last and next poll
-	PollInterval int64 `gorm:"not null" json:"poll-interval"`
-	LastPoll     int64 `gorm:"not null" json:"last-poll"`
-	NextPoll     int64 `gorm:"not null" json:"next-poll"`
+	PollInterval int64      `gorm:"not null" json:"poll-interval"`
+	LastPoll     *time.Time `json:"last-poll"`
+	NextPoll     *time.Time `json:"next-poll"`
 
 	// Current status of the site and the time since it last changed
-	Status     int   `gorm:"not null" json:"status"`
-	StatusTime int64 `gorm:"not null" json:"status-time"`
+	Status     int        `gorm:"not null" json:"status"`
+	StatusTime *time.Time `json:"status-time"`
 
 	// User that created the site
 	User   *User `gorm:"ForeignKey:UserID" json:"-"`

@@ -2,6 +2,7 @@ package db
 
 import (
 	"strconv"
+	"time"
 )
 
 // Outage represents a period of time during which a site was inaccessible.
@@ -9,8 +10,8 @@ type Outage struct {
 	ID int64 `json:"id"`
 
 	// Start and ending time of the outage (may be 0 if ongoing)
-	StartTime int64 `gorm:"not null" json:"start-time"`
-	EndTime   int64 `gorm:"not null" json:"end-time"`
+	StartTime time.Time  `gorm:"not null" json:"start-time"`
+	EndTime   *time.Time `json:"end-time"`
 
 	// Whether the two notifications have been sent yet or not
 	StartNotificationSent bool `gorm:"not null" json:"-"`

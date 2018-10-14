@@ -36,17 +36,17 @@ func (m *Monitor) run() {
 				)
 				if db := conn.
 					Set("gorm:query_option", "FOR UPDATE").
-					Order("next_poll").
+					Order("next_poll NULLS FIRST").
 					First(s); db.Error != nil {
 					if !db.RecordNotFound() {
 						return db.Error
 					}
 					return nil
 				}
-				if s.NextPoll.After(now) {
+				if s.NextPoll != nil && s.NextPoll.After(now) {
 					m.log.Debugf(
 						"waiting %s to check %s",
-						period.Between(now, s.NextPoll).Format(),
+						period.Between(now, *s.NextPoll).Format(),
 						s.Name,
 					)
 					timerChan = time.After(s.NextPoll.Sub(now))
