@@ -3,7 +3,6 @@ import moment from 'moment';
 
 export default Route.extend({
   auth: Ember.inject.service(),
-  moment: Ember.inject.service(),
 
   beforeModel() {
     moment.relativeTimeThreshold('ss', 2);
