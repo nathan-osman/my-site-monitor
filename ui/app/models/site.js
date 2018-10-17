@@ -15,6 +15,10 @@ export default DS.Model.extend({
     return this.get('status') == 0;
   }),
 
+  isOffline: computed('status', function() {
+    return this.get('status') == 2;
+  }),
+
   statusClass: computed('status', function() {
     return {
       1: 'online',
