@@ -1,0 +1,33 @@
+<h1>{{model.site.name}} History</h1>
+<p>
+  The history for {{models.site.name}} is shown below.
+</p>
+
+{{#if model.site.isOffline}}
+  <div class="alert">
+    This site is currently offline.
+  </div>
+{{/if}}
+
+{{#each model.outages as |outage|}}
+  <div class="outage">
+    <div class="info">
+      <div class="start">
+        {{moment-format outage.startTime 'MMMM D, YYYY HH:mm'}}
+        {{#if outage.endTime}}
+          &mdash; {{moment-format outage.endTime 'MMMM D, YYYY HH:mm'}}
+        {{/if}}
+      </div>
+      <div class="duration">
+        {{moment-duration outage.duration}}
+      </div>
+    </div>
+    <div class="description">
+      <strong>Error:</strong> {{outage.description}}
+    </div>
+  </div>
+{{else}}
+  <div class="empty">
+    No outages recorded
+  </div>
+{{/each}}

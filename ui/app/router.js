@@ -10,6 +10,7 @@ Router.map(function() {
   this.route('login');
   this.route('sites', function() {
     this.route('new');
+    this.route('view', {path: ':site_id'});
   });
 });
 

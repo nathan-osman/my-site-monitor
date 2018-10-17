@@ -76,12 +76,24 @@ label {
   }
 }
 
+.alert {
+  background-color: #aa3939;
+  color: #ffffff;
+  margin: 32px 0;
+  padding: 16px;
+}
+
 .buttons {
   margin: 32px 0;
 }
 
 .container {
   margin: 0 16px;
+}
+
+.empty {
+  color: #cccccc;
+  margin: 32px 0;
 }
 
 .header {
@@ -132,7 +144,13 @@ label {
 
   .site {
     border: 1px solid #dddddd;
+    color: #000000;
     padding: 16px;
+    text-decoration: none;
+
+    &:hover {
+      background-color: #f9f9f9;
+    }
 
     @media #{$desktop} {
       flex-basis: 50%;
@@ -202,6 +220,31 @@ label {
     .actions {
       text-align: right;
     }
+  }
+}
+
+.outage {
+  margin: 40px 0;
+
+  .info {
+    border-bottom: 1px solid #000000;
+    display: flex;
+    font-size: 14pt;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+
+    .start {
+      font-weight: bold;
+    }
+
+    .duration {
+      flex-grow: 1;
+      text-align: right;
+    }
+  }
+
+  .description {
+    font-size: 10pt;
   }
 }
 

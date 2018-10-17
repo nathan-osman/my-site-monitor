@@ -5,7 +5,7 @@
 
 <div class="dashboard">
   {{#each model as |site|}}
-    <div class="site">
+    {{#link-to 'sites.view' site.id class='site'}}
       <div class="info">
         <div class="name">
           {{site.name}}<br>
@@ -25,6 +25,6 @@
           </span>
         </div>
       </div>
-    </div>
+    {{/link-to}}
   {{/each}}
 </div>
