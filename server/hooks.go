@@ -44,3 +44,11 @@ func (s *Server) siteHook(p *resource.Params) error {
 	}
 	return nil
 }
+
+func (s *Server) outageHook(p *resource.Params) error {
+	switch p.Action {
+	case resource.BeforeFindAll:
+		p.DB = p.DB.Order("start_time DESC")
+	}
+	return nil
+}

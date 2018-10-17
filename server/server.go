@@ -57,9 +57,10 @@ func New(cfg *Config) (*Server, error) {
 		Fields: []string{"id"},
 	})
 	api.AddResource(&db.Outage{}, &resource.Resource{
-		DB:    s.conn.DB,
-		Type:  &db.Outage{},
-		Hooks: []resource.Hook{s.readOnly},
+		DB:     s.conn.DB,
+		Type:   &db.Outage{},
+		Hooks:  []resource.Hook{s.readOnly, s.outageHook},
+		Fields: []string{"site_id"},
 	})
 	r.HandleFunc("/api/login", s.login)
 	r.HandleFunc("/api/logout", s.logout)
