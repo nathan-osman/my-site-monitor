@@ -165,6 +165,8 @@ label {
     }
 
     @media #{$mobile} {
+      display: block;
+
       &:not(:nth-child(1)) {
         border-top: none;
       }
